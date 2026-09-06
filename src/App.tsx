@@ -1,99 +1,67 @@
 import type React from "react";
 import "./App.css";
 import { cn } from "cn";
-import type { t } from "node_modules/vite/dist/node/chunks/moduleRunnerTransport";
-import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
 import { Separator } from "./components/ui/separator";
-import {
-	EmailIcon,
-	GitHubLogo,
-	LinkedInLogo,
-	PythonLogo,
-	ResumeIcon,
-	RustLogo,
-	TypeScriptLogo,
-} from "./icons";
+import { EmailIcon, GitHubLogo, LinkedInLogo, ResumeIcon } from "./icons";
+import { type Project, projects } from "./projects";
+import { type Skill, SkillBox } from "./skills";
 
 function App() {
 	return (
 		<div>
 			<HomePage />
+			<PageFooter />
 		</div>
 	);
 }
 
-const Skills = Object.freeze({
-	RUST: "Rust",
-	TYPESCRIPT: "TypeScript",
-	PYTHON: "Python",
-});
-type Skill = (typeof Skills)[keyof typeof Skills];
-
-type Project = {
-	name: string;
-	description: string;
-	// image_link: string;
-	skills: Skill[];
-	link: string;
-};
-
-const projects: Array<Project> = [
-	{
-		name: "Tectonic+",
-		description: "A Rust-based benchmarking suite for key-value stores.",
-		skills: ["Rust", "Python"],
-		link: "",
-	},
-	{
-		name: "Dominion Simulator",
-		description:
-			"A simulator for the board game dominion. Can run multiplayer games.",
-		skills: ["TypeScript"],
-		link: "",
-	},
-	{
-		name: "Blood on the Clocktower Fast Grimiore",
-		description:
-			"A online version of the Grimiore for Blood on the Clocktower designed to automatically keep track of state and resolve role effects.",
-		skills: ["Rust"],
-		link: "",
-	},
-];
+function PageFooter() {
+	return (
+		<div className="sticky bottom-0 left-0 w-screen p-4 bg-background">
+			<SectionSeparator />
+			<div className="h-lh flex flex-row gap-4 items-center">
+				<SocialLink
+					href="https://www.linkedin.com/in/artem-lavrov-76371428b/"
+					aria_label="LinkedIn profile"
+				>
+					<LinkedInLogo className="h-lh aspect-square" />
+					LinkedIn
+				</SocialLink>
+				<SocialLink
+					href="https://github.com/Altakie"
+					aria_label="GitHub profile"
+				>
+					<GitHubLogo className="h-lh aspect-square" />
+					GitHub
+				</SocialLink>
+				<SocialLink
+					href="/Resume-Artem_Lavrov.pdf"
+					aria_label="Download resume"
+				>
+					<ResumeIcon className="h-lh aspect-square" />
+					Resume
+				</SocialLink>
+				<SocialLink
+					href="mailto:artemislavrov@gmail.com"
+					aria_label="Send email"
+				>
+					<EmailIcon className="h-lh aspect-square" />
+					Email
+				</SocialLink>
+				{/* <MediaLink href="#Projects">Projects</MediaLink> */}
+			</div>
+		</div>
+	);
+}
 
 function HomePage() {
 	return (
 		<div className="p-4 max-w-full max-h-full">
 			<p className="text-6xl text-accent font-mono font-bold">Artem Lavrov</p>
+			<p className="text-sm font-mono text-description">NYC, NY</p>
 			<AboutMe />
 			<Projects />
-			{/* {range.map((value) => ( */}
-			{/* 	<section> */}
-			{/* 		<SectionHeader>{value}</SectionHeader> */}
-			{/* 	</section> */}
-			{/* ))} */}
-			{/**/}
-			<div className="fixed bottom-0 left-0 w-screen p-4 bg-background">
-				<SectionSeparator />
-				<div className="h-lh flex flex-row gap-4 items-center">
-					<SocialLink href="https://www.linkedin.com/in/artem-lavrov-76371428b/">
-						<LinkedInLogo className="h-lh aspect-square" />
-						LinkedIn
-					</SocialLink>
-					<SocialLink href="https://github.com/Altakie">
-						<GitHubLogo className="h-lh aspect-square" />
-						GitHub
-					</SocialLink>
-					<SocialLink href="/Resume-Artem_Lavrov.pdf">
-						<ResumeIcon className="h-lh aspect-square" />
-						Resume
-					</SocialLink>
-					<SocialLink href="mailto:artemislavrov@gmail.com">
-						<EmailIcon className="h-lh aspect-square" />
-						Email
-					</SocialLink>
-					{/* <MediaLink href="#Projects">Projects</MediaLink> */}
-				</div>
-			</div>
+			<SkillsSection />
 		</div>
 	);
 }
@@ -109,7 +77,10 @@ function AboutMe() {
 					University with a B.S. in Computer Science and a minor in mathematics.
 					I received High Honors and The Jacques Cohen Award for my senior
 					thesis{" "}
-					<ClickableLink href="https://doi.org/10.48617/etd.1541 ">
+					<ClickableLink
+						href="https://doi.org/10.48617/etd.1541 "
+						aria_label="Tectonic+ senior thesis"
+					>
 						Tectonic+
 					</ClickableLink>
 					: a Rust-based benchmarking suite for key-value stores that measures
@@ -155,11 +126,22 @@ function Projects() {
 function ProjectInfo({ project }: { project: Project }) {
 	return (
 		<div className="flex flex-col gap-1">
-			<p className="font-bold font-mono text-3xl">{project.name}</p>
+			<div className="flex flex-row items-center gap-2">
+				<p className="font-bold font-mono text-3xl">{project.name}</p>
+				{project.github_link && (
+					<a
+						href={project.github_link}
+						className="text-description hover:text-accent"
+						aria-label={`${project.name} on GitHub`}
+					>
+						<GitHubLogo className="h-lh aspect-square" />
+					</a>
+				)}
+			</div>
 			<p className="font-sans text-sm text-description">
 				{project.description}
 			</p>
-			<div className="flex flex-row gap-2">
+			<div className="flex flex-row gap-2 flex-wrap">
 				{project.skills.map((skill) => (
 					<SkillBox key={skill} skill={skill} />
 				))}
@@ -168,28 +150,61 @@ function ProjectInfo({ project }: { project: Project }) {
 	);
 }
 
-const skillInfo: Record<
-	Skill,
-	{ color: string; Logo: React.ComponentType<{ className?: string }> }
-> = {
-	Rust: { color: "#ef4a00", Logo: RustLogo },
-	TypeScript: { color: "#3178c6", Logo: TypeScriptLogo },
-	Python: { color: "#ffd44d", Logo: PythonLogo },
-};
+const skillGroups: Array<{ title: string; skills: Skill[] }> = [
+	{
+		title: "Programming Languages",
+		skills: [
+			"Rust",
+			"Java",
+			"Python",
+			"TypeScript",
+			"JavaScript",
+			"C",
+			"Go",
+			"C#",
+		],
+	},
+	{
+		title: "Operating Systems",
+		skills: ["Linux"],
+	},
+	{
+		title: "Tools & Technologies",
+		skills: [
+			"Git",
+			"GitHub",
+			"Docker",
+			"Azure Cloud",
+			"REST APIs",
+			"Maven",
+			"Selenium",
+			"SQL",
+		],
+	},
+	{
+		title: "AI Tools",
+		skills: ["Claude Code", "OpenCode"],
+	},
+];
 
-function SkillBox({ skill }: { skill: Skill }) {
-	const { color, Logo } = skillInfo[skill];
-
+function SkillsSection() {
 	return (
-		<div
-			className={
-				"px-2 h-2lh border rounded-full text-sm flex flex-row items-center gap-1"
-			}
-			style={{ color: color, borderColor: color }}
-		>
-			<Logo className="h-[1em] aspect-square" />
-			{skill}
-		</div>
+		<section id="Skills">
+			<SectionHeader>Skills</SectionHeader>
+			<SectionSeparator />
+			<div className="flex flex-col gap-4 px-8 text-left">
+				{skillGroups.map((group) => (
+					<div key={group.title}>
+						<p className="font-mono font-bold text-lg mb-2">{group.title}</p>
+						<div className="flex flex-row flex-wrap gap-2">
+							{group.skills.map((skill) => (
+								<SkillBox key={skill} skill={skill} />
+							))}
+						</div>
+					</div>
+				))}
+			</div>
+		</section>
 	);
 }
 
@@ -197,15 +212,21 @@ function ClickableLink({
 	children,
 	href,
 	className,
+	aria_label,
 }: {
 	children: React.ReactNode;
 	href: string;
+	aria_label: string;
 	className?: string;
 }) {
 	return (
 		<a
 			href={href}
-			className={cn(className ? className : "", "text-accent underline")}
+			aria-label={aria_label}
+			className={cn(
+				className ? className : "",
+				"text-accent underline hover:text-purple-500",
+			)}
 		>
 			{children}
 		</a>
@@ -215,13 +236,16 @@ function ClickableLink({
 function SocialLink({
 	children,
 	href,
+	aria_label,
 }: {
 	children: React.ReactNode;
 	href: string;
+	aria_label: string;
 }) {
 	return (
 		<a
 			href={href}
+			aria-label={aria_label}
 			className="h-lh inline-flex items-center gap-1 text-xs hover:text-accent"
 		>
 			{children}
@@ -231,10 +255,6 @@ function SocialLink({
 
 function SectionHeader({ ...props }: React.PropsWithChildren) {
 	return <p className="text-4xl my-2 font-mono font-bold">{props.children}</p>;
-}
-
-function SectionBody({ ...props }: React.PropsWithChildren) {
-	return <div className="pl-2">{props.children}</div>;
 }
 
 function SectionSeparator() {
