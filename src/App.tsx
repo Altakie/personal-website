@@ -58,7 +58,7 @@ function HomePage() {
 	return (
 		<div className="p-4 max-w-full max-h-full">
 			<p className="text-6xl text-accent font-mono font-bold">Artem Lavrov</p>
-			<p className="text-sm font-mono text-description">NYC, NY</p>
+			<p className="text-sm font-bold font-sans text-description">NYC, NY</p>
 			<AboutMe />
 			<Projects />
 			<SkillsSection />
@@ -71,7 +71,7 @@ function AboutMe() {
 		<section id="About">
 			<SectionHeader>About me</SectionHeader>
 			<SectionSeparator />
-			<div className="grid grid-cols-2 justify-center px-8 gap-4 text-description">
+			<div className="grid grid-cols-1 md:grid-cols-2 justify-center px-8 gap-4 text-description">
 				<div>
 					Hi I'm Artem. I recently graduated Summa Cum Laude from Brandeis
 					University with a B.S. in Computer Science and a minor in mathematics.
